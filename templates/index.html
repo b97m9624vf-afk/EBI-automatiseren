@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Collin Crowdfund — EBI Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #1E3764;
+      --navy-dark: #152748;
+      --orange: #F18A00;
+      --orange-hover: #d87b00;
+      --sky: #7DB8E2;
+      --bg: #F4F6F9;
+      --card: #FFFFFF;
+      --border: #DCE2EC;
+      --text: #2B3445;
+      --muted: #64748B;
+      --success: #16A34A;
+      --danger: #DC2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Header & URL Bar */
+    header {
+      background: #FFFFFF;
+      color: var(--navy);
+      padding: 12px 22px;
+      border-bottom: 3px solid var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: 0 2px 10px rgba(30,55,100,0.08);
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      white-space: nowrap;
+    }
+
+    .brand img {
+      height: 40px;
+    }
+
+    .brand h1 {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: var(--navy);
+      margin: 0;
+      border-left: 2px solid var(--border);
+      padding-left: 14px;
+    }
+
+    .url-bar {
+      display: flex;
+      flex: 1;
+      max-width: 760px;
+      gap: 8px;
+    }
+
+    .url-bar input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+      background: #F8FAFC;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+    }
+
+    .url-bar input:focus {
+      background: #fff;
+      border-color: var(--orange);
+      box-shadow: 0 0 0 2px rgba(241, 138, 0, 0.2);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 15px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-orange {
+      background: var(--orange);
+      color: #fff;
+    }
+
+    .btn-orange:hover:not(:disabled) {
+      background: var(--orange-hover);
+    }
+
+    .btn-navy {
+      background: var(--navy);
+      color: #fff;
+    }
+
+    .btn-navy:hover:not(:disabled) {
+      background: var(--navy-dark);
+    }
+
+    .btn-outline {
+      background: #F1F5F9;
+      color: var(--navy);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: #E2E8F0;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .btn-light {
+      background: #EEF2F7;
+      color: var(--navy);
+      border: 1px solid var(--border);
+    }
+
+    .btn-light:hover:not(:disabled) {
+      background: #E2E8F0;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Main Split Layout */
+    main {
+      display: grid;
+      grid-template-columns: 52% 48%;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .editor-pane {
+      overflow-y: auto;
+      padding: 18px 22px 60px;
+      border-right: 1px solid var(--border);
+    }
+
+    .preview-pane {
+      display: flex;
+      flex-direction: column;
+      background: #525659;
+      overflow: hidden;
+    }
+
+    .preview-toolbar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .preview-frame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #525659;
+    }
+
+    /* Cards & Form Controls */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #F1F5F9;
+    }
+
+    .card-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title span.step {
+      background: #E8F1FA;
+      color: var(--navy);
+      font-size: 11.5px;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field {
+      margin-bottom: 11px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .field input[type="text"],
+    .field input[type="number"],
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 74px;
+      line-height: 1.45;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 2px rgba(30, 55, 100, 0.1);
+    }
+
+    /* Dynamic rows */
+    .dyn-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 7px;
+    }
+
+    .dyn-row input {
+      flex: 1;
+      padding: 7px 9px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .btn-remove {
+      background: #FEE2E2;
+      color: var(--danger);
+      border: none;
+      border-radius: 5px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    /* Financial tables preview/editor */
+    .jc-table-box {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      background: #FAFBFD;
+    }
+
+    .jc-table-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .jc-mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .jc-mini-table td {
+      border: 1px solid var(--border);
+      padding: 3px 6px;
+      background: #fff;
+    }
+
+    .jc-mini-table td input {
+      width: 100%;
+      border: none;
+      font-size: 12px;
+      font-family: inherit;
+      padding: 2px;
+      background: transparent;
+    }
+
+    .status-banner {
+      padding: 9px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .status-banner.info {
+      display: block;
+      background: #E0F2FE;
+      color: #0369A1;
+      border: 1px solid #BAE6FD;
+    }
+
+    .status-banner.success {
+      display: block;
+      background: #DCFCE7;
+      color: #15803D;
+      border: 1px solid #BBF7D0;
+    }
+
+    .status-banner.error {
+      display: block;
+      background: #FEE2E2;
+      color: #B91C1C;
+      border: 1px solid #FECACA;
+    }
+
+    .organigram-preview-box {
+      display: flex;
+      align-items: flex-end;
+      gap: 18px;
+      margin-top: 8px;
+      padding: 10px;
+      background: #F8FAFC;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+    }
+
+    .org-red-main {
+      background: #B80000;
+      color: #fff;
+      padding: 18px 22px;
+      font-size: 13px;
+      text-align: center;
+      min-width: 210px;
+      border: 1px solid #8A4B38;
+    }
+
+    .org-red-legend {
+      background: #B80000;
+      color: #fff;
+      padding: 5px 12px;
+      font-size: 11px;
+      border: 1px solid #8A4B38;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="/collin_logo.svg" alt="Collin Crowdfund" />
+      <h1>EBI Document Generator</h1>
+    </div>
+
+    <div class="url-bar">
+      <input
+        type="text"
+        id="pitchUrlInput"
+        placeholder="Plak hier de Collin Crowdfund pitch-link (bijv. https://www.collincrowdfund.nl/.../?auth=...)"
+        value="https://www.collincrowdfund.nl/a-f-j-simons-en-a-m-m-kurver/?auth=48135dbcd3c64ea6a50cae86ef14d3bb1cfc160d4699e9a8713c7010d3db57eb"
+      />
+      <button class="btn btn-orange" id="btnFetchPitch" onclick="scrapePitch()">
+        Haal Pitch op &amp; Vul EBI
+      </button>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-outline" onclick="refreshPdfPreview()">
+        Vernieuw PDF Preview
+      </button>
+      <button class="btn btn-orange" onclick="downloadPdf()">
+        Download PDF (.pdf)
+      </button>
+      <button class="btn btn-outline" onclick="downloadDocx()">
+        Word (.docx)
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT: Structured EBI Form Editor -->
+    <div class="editor-pane">
+      <div id="statusBanner" class="status-banner"></div>
+
+      <!-- 1. Basisgegevens -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span class="step">1</span> Basisgegevens &amp; Samenvatting (Pagina 1 &amp; 2)</h2>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label>Leningnummer</label>
+            <input type="text" id="f_leningnummer" />
+          </div>
+          <div class="field">
+            <label>Streefbedrag / Doelbedrag</label>
+            <input type="text" id="f_streefbedrag" />
+          </div>
+          <div class="field">
+            <label>Lei-code</label>
+            <input type="text" id="f_lei_code" value="724500VFNB9F43XDI745" />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Investeringskans / Projectnaam</label>
+            <input type="text" id="f_investeringskans" oninput="syncProjectFields(this.value)" />
+          </div>
+          <div class="field">
+            <label>Geldnemer(s) / Projecteigenaar</label>
+            <input type="text" id="f_projecteigenaar" />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Deadline (wanneer sluit het project)</label>
+            <input type="text" id="f_deadline" value="30 dagen na publicatiedatum" />
+          </div>
+          <div class="field">
+            <label>Rechtsvorm (uit pitch)</label>
+            <input type="text" id="f_rechtsvorm" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Projecteigenaar, KvK & Juridische structuur -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span class="step">2</span> Geldnemer(s), KvK &amp; Juridische Structuur (Pagina 2)</h2>
+          <button class="btn btn-light btn-sm" onclick="addGeldnemerRow()">+ Geldnemer toevoegen</button>
+        </div>
+        <div class="field">
+          <label>Geldnemers &amp; KvK-nummers</label>
+          <div id="geldnemersContainer"></div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Website</label>
+            <input type="text" id="f_website" value="n.v.t." />
+          </div>
+          <div class="field">
+            <label>Vestigingsplaats</label>
+            <input type="text" id="f_vestigingsplaats" />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Organigram tekst (automatisch rood blok)</label>
+            <input type="text" id="f_organigram_text" oninput="updateOrganigramPreview()" />
+          </div>
+          <div class="field">
+            <label>Of upload eigen organigram afbeelding (optioneel)</label>
+            <input type="file" id="f_organigram_file" accept="image/*" onchange="handleOrganigramUpload(event)" />
+          </div>
+        </div>
+        <div class="organigram-preview-box" id="orgPreviewBox">
+          <div class="org-red-main" id="orgRedMainText">A.F.J. Simons en A.M.M. Kurver</div>
+          <div class="org-red-legend">= geldnemer</div>
+          <button class="btn btn-light btn-sm" id="btnClearOrgImg" style="display:none;margin-left:auto" onclick="clearOrganigramUpload()">
+            Verwijder geüploade afbeelding
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Onderneming & Financiële Cijfers -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span class="step">3</span> Activiteiten &amp; Financiële Cijfers (Pagina 2–4)</h2>
+        </div>
+        <div class="field">
+          <label>Belangrijkste activiteiten van de projecteigena(a)r(en) ("Onderneming" / "Leendoel")</label>
+          <textarea id="f_onderneming_text" rows="4"></textarea>
+        </div>
+        <div class="field">
+          <label>Inleiding presentatie financiële cijfers ("De presentatie van de belangrijkste financiële cijfers is gebaseerd op...")</label>
+          <textarea id="f_presentatie_intro" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label>Toelichting jaarcijfers &amp; Kasstroom (wordt gebruikt bij Financiële cijfers én onder Risicofactoren → Kasstroom)</label>
+          <textarea id="f_kasstroom_text" rows="5"></textarea>
+        </div>
+        <div class="field">
+          <label>Jaarcijfers Tabellen uit de Pitch (vink aan welke tabellen in het EBI komen; waarden zijn direct aanpasbaar)</label>
+          <div id="jaarcijfersContainer"></div>
+        </div>
+        <div class="field">
+          <label>Gedeponeerde jaarcijfers bij de Kamer van Koophandel (D&amp;B)</label>
+          <input type="text" id="f_kvk_jaarcijfers_text" value="Niet van toepassing." />
+        </div>
+      </div>
+
+      <!-- 4. Beschrijving van het crowdfundingproject & Kenmerken -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span class="step">4</span> Investeringsoverzicht &amp; Kenmerken (Pagina 4–5)</h2>
+          <button class="btn btn-light btn-sm" onclick="addInvesteringRow()">+ Rij toevoegen</button>
+        </div>
+        <div class="field">
+          <label>Tabel: Beschrijving van het crowdfundingproject (Investeringsoverzicht)</label>
+          <div id="investeringContainer"></div>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label>Bodembedrag financiering</label>
+            <input type="text" id="f_bodembedrag" value="n.v.t." />
+          </div>
+          <div class="field">
+            <label>Inschrijfperiode</label>
+            <input type="text" id="f_inschrijfperiode" value="Maximaal 30 dagen na publicatie" />
+          </div>
+          <div class="field">
+            <label>Bedenktermijn</label>
+            <input type="text" id="f_bedenktermijn" value="Vier kalenderdagen" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Opmerking neven-investering Collin medewerkers/bestuurders (laat leeg om weg te laten)</label>
+          <input type="text" id="f_collin_invested_note" />
+        </div>
+      </div>
+
+      <!-- 5. Risicofactoren, Voorwaarden & Zekerheden -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span class="step">5</span> Risicofactoren, Voorwaarden &amp; Zekerheden (Pagina 5–7)</h2>
+        </div>
+        <div class="field">
+          <label>Standaard risico-afsluiting onder Kasstroom</label>
+          <select onchange="applyKasstroomPreset(this.value)" style="margin-bottom:6px">
+            <option value="">— Snelkeuze standaardtekst —</option>
+            <option value="hist_toek">Historische en toekomstige (cijfer)informatie (Standaard)</option>
+            <option value="hist">Alleen historische (cijfer)informatie</option>
+            <option value="toek">Alleen toekomstige (cijfer)informatie</option>
+            <option value="box3">Box 3: Verwachte huuropbrengsten</option>
+          </select>
+          <textarea id="f_kasstroom_risico_afsluiting" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--navy)">
+            <input type="checkbox" id="f_include_herfinanciering" onchange="toggleHerfinanciering()" />
+            Kopje "Herfinanciering" opnemen (indien er sprake is van een slottermijn / restschuld)
+          </label>
+          <textarea id="f_herfinanciering_text" rows="3" style="display:none;margin-top:6px"></textarea>
+        </div>
+        <div class="field">
+          <label>Financieringsbehoefte tekst (onder "Openbaarmaking in verband met leningen")</label>
+          <textarea id="f_financieringsbehoefte_text" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label>Risico(scores) tekst (Dun &amp; Bradstreet + Collin Credit Score)</label>
+          <textarea id="f_risico_scores_text" rows="2"></textarea>
+        </div>
+        <div class="field">
+          <label>De gestelde voorwaarden en zekerheden (één bulletpoint per alinea / regel)</label>
+          <textarea id="f_zekerheden_bullets" rows="8"></textarea>
+        </div>
+        <div class="field">
+          <label>Historie betaalverplichtingen (Pagina 8)</label>
+          <select onchange="applyHistoriePreset(this.value)" style="margin-bottom:6px">
+            <option value="">— Snelkeuze BKR / Dun &amp; Bradstreet —</option>
+            <option value="bkr_nee">BKR — niet bekend (Box 3 / Privé)</option>
+            <option value="db_nee">Dun &amp; Bradstreet — niet bekend (Zakelijk)</option>
+            <option value="db_ja">Dun &amp; Bradstreet — wel sprake van geweest</option>
+          </select>
+          <textarea id="f_historie_betaalverplichtingen" rows="2"></textarea>
+        </div>
+      </div>
+
+      <!-- 6. Betaalschema Projecteigenaar -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span class="step">6</span> Betaalschema Projecteigenaar (Pagina 8)</h2>
+          <button class="btn btn-light btn-sm" onclick="recalculateSchedule()">Herbereken uit parameters</button>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label>Hoofdsom (€)</label>
+            <input type="number" id="lp_principal" step="1000" value="100000" />
+          </div>
+          <div class="field">
+            <label>Rente (% per jaar)</label>
+            <input type="number" id="lp_rate" step="0.1" value="7.5" />
+          </div>
+          <div class="field">
+            <label>Looptijd (maanden)</label>
+            <input type="number" id="lp_months" step="1" value="96" />
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label>Aflosvrije periode (maanden)</label>
+            <input type="number" id="lp_grace" step="1" value="12" />
+          </div>
+          <div class="field">
+            <label>Slottermijn (€)</label>
+            <input type="number" id="lp_balloon" step="1000" value="0" />
+          </div>
+          <div class="field">
+            <label>Succesfee (% — standaard 2%)</label>
+            <input type="number" id="lp_succes_fee" step="0.1" value="2.0" />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Maandelijkse admin vergoeding (% van hoofdsom — standaard 0,07%)</label>
+            <input type="number" id="lp_admin_pct" step="0.01" value="0.07" />
+          </div>
+          <div class="field">
+            <label>Aflosvorm</label>
+            <select id="lp_type">
+              <option value="Lineair">Lineair</option>
+              <option value="Annuïtair">Annuïtair</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Of plak hier rechtstreeks het schema uit Excel / CCS (tabblad amortisatieschema EBI in CCS)</label>
+          <div style="display:flex;gap:8px">
+            <textarea id="f_pasted_schedule" rows="2" placeholder="Kopieer en plak hier de rijen uit CCS Excel (Termijn | Termijnbedrag | Terugbetaling | Rente en kosten | Saldo)..."></textarea>
+            <button class="btn btn-light btn-sm" onclick="applyPastedSchedule()">Inladen</button>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted)" id="scheduleSummaryText">
+          97 rijen geladen (Termijn 0 t/m 96).
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Live PDF Preview -->
+    <div class="preview-pane">
+      <div class="preview-toolbar">
+        <span id="previewTitle">Live PDF Voorbeeld (Blad met essentiële informatie)</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-light btn-sm" onclick="refreshPdfPreview()">Vernieuw Preview</button>
+          <button class="btn btn-orange btn-sm" onclick="downloadPdf()">Download PDF</button>
+        </div>
+      </div>
+      <iframe id="pdfPreviewFrame" class="preview-frame" title="PDF Preview"></iframe>
+    </div>
+  </main>
+
+  <script>
+    let currentData = {
+      geldnemers: [],
+      jaarcijfers_tables: [],
+      investeringsoverzicht: [],
+      betaalschema: [],
+    };
+    let uploadedOrganigramBase64 = null;
+    let currentPdfBlobUrl = null;
+
+    function showStatus(msg, type = "info") {
+      const el = document.getElementById("statusBanner");
+      el.className = "status-banner " + type;
+      el.textContent = msg;
+    }
+
+    function syncProjectFields(val) {
+      document.getElementById("f_projecteigenaar").value = val;
+      document.getElementById("f_organigram_text").value = val;
+      updateOrganigramPreview();
+    }
+
+    function updateOrganigramPreview() {
+      const txt = document.getElementById("f_organigram_text").value || document.getElementById("f_projecteigenaar").value;
+      document.getElementById("orgRedMainText").textContent = txt;
+    }
+
+    function handleOrganigramUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedOrganigramBase64 = e.target.result;
+        document.getElementById("btnClearOrgImg").style.display = "inline-flex";
+        showStatus("Eigen organigram-afbeelding geladen. Klik op 'Vernieuw PDF Preview' om te bekijken.", "info");
+        refreshPdfPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearOrganigramUpload() {
+      uploadedOrganigramBase64 = null;
+      document.getElementById("f_organigram_file").value = "";
+      document.getElementById("btnClearOrgImg").style.display = "none";
+      refreshPdfPreview();
+    }
+
+    function renderGeldnemers() {
+      const container = document.getElementById("geldnemersContainer");
+      container.innerHTML = "";
+      (currentData.geldnemers || []).forEach((gn, idx) => {
+        const row = document.createElement("div");
+        row.className = "dyn-row";
+        row.innerHTML = `
+          <input type="text" placeholder="Naam geldnemer" value="${escapeAttr(gn.naam || '')}" oninput="currentData.geldnemers[${idx}].naam = this.value" />
+          <input type="text" placeholder="KvK-nummer (of n.v.t.)" style="max-width:170px" value="${escapeAttr(gn.kvk || 'n.v.t.')}" oninput="currentData.geldnemers[${idx}].kvk = this.value" />
+          <button class="btn-remove" title="Verwijder" onclick="removeGeldnemer(${idx})">&times;</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function addGeldnemerRow() {
+      currentData.geldnemers.push({ naam: "", kvk: "n.v.t." });
+      renderGeldnemers();
+    }
+
+    function removeGeldnemer(idx) {
+      currentData.geldnemers.splice(idx, 1);
+      renderGeldnemers();
+    }
+
+    function renderInvesteringsoverzicht() {
+      const container = document.getElementById("investeringContainer");
+      container.innerHTML = "";
+      (currentData.investeringsoverzicht || []).forEach((r, idx) => {
+        const c0 = r[0] || { text: "", bold: false };
+        const c1 = r[1] || { text: "", bold: false };
+        const row = document.createElement("div");
+        row.className = "dyn-row";
+        row.innerHTML = `
+          <input type="text" placeholder="Omschrijving" value="${escapeAttr(c0.text)}" style="${c0.bold ? 'font-weight:700' : ''}" oninput="currentData.investeringsoverzicht[${idx}][0].text = this.value" />
+          <input type="text" placeholder="Bedrag" style="max-width:160px;${c1.bold ? 'font-weight:700' : ''}" value="${escapeAttr(c1.text)}" oninput="currentData.investeringsoverzicht[${idx}][1].text = this.value" />
+          <label style="font-size:11px;display:flex;align-items:center;gap:3px;margin:0">
+            <input type="checkbox" ${c0.bold ? "checked" : ""} onchange="currentData.investeringsoverzicht[${idx}][0].bold = this.checked; currentData.investeringsoverzicht[${idx}][1].bold = this.checked; renderInvesteringsoverzicht();" /> Vet
+          </label>
+          <button class="btn-remove" title="Verwijder" onclick="currentData.investeringsoverzicht.splice(${idx}, 1); renderInvesteringsoverzicht();">&times;</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function addInvesteringRow() {
+      currentData.investeringsoverzicht.push([
+        { text: "", bold: false, align: "left" },
+        { text: "€ 0,-", bold: false, align: "right" }
+      ]);
+      renderInvesteringsoverzicht();
+    }
+
+    function renderJaarcijfersTables() {
+      const container = document.getElementById("jaarcijfersContainer");
+      container.innerHTML = "";
+      (currentData.jaarcijfers_tables || []).forEach((tbl, tIdx) => {
+        const box = document.createElement("div");
+        box.className = "jc-table-box";
+        let rowsHtml = "";
+        (tbl.rows || []).forEach((r, rIdx) => {
+          let cellsHtml = "";
+          r.forEach((c, cIdx) => {
+            cellsHtml += `<td><input type="text" style="${c.bold ? 'font-weight:700;' : ''}" value="${escapeAttr(c.text)}" oninput="currentData.jaarcijfers_tables[${tIdx}].rows[${rIdx}][${cIdx}].text = this.value" /></td>`;
+          });
+          rowsHtml += `<tr>${cellsHtml}</tr>`;
+        });
+
+        box.innerHTML = `
+          <div class="jc-table-head">
+            <label style="display:flex;align-items:center;gap:7px;font-weight:700;color:var(--navy);margin:0;cursor:pointer">
+              <input type="checkbox" ${tbl.included ? "checked" : ""} onchange="currentData.jaarcijfers_tables[${tIdx}].included = this.checked" />
+              <span>${escapeHtml(tbl.title || 'Tabel ' + (tIdx + 1))}</span>
+            </label>
+          </div>
+          <input type="text" value="${escapeAttr(tbl.title || '')}" style="margin-bottom:4px;font-size:12px;font-weight:600" oninput="currentData.jaarcijfers_tables[${tIdx}].title = this.value" />
+          <table class="jc-mini-table">${rowsHtml}</table>
+        `;
+        container.appendChild(box);
+      });
+    }
+
+    function toggleHerfinanciering() {
+      const checked = document.getElementById("f_include_herfinanciering").checked;
+      document.getElementById("f_herfinanciering_text").style.display = checked ? "block" : "none";
+    }
+
+    function applyKasstroomPreset(val) {
+      if (!val) return;
+      const el = document.getElementById("f_kasstroom_risico_afsluiting");
+      if (val === "hist_toek") {
+        el.value = "De aangeleverde en beoordeelde (cijfer)informatie is in belangrijke mate gebaseerd op historische, en toekomstige (cijfer)informatie. Het risico bestaat dat de toekomstige kasstroom niet toereikend is om aan de betalingsverplichting(en) te kunnen voldoen.";
+      } else if (val === "hist") {
+        el.value = "De aangeleverde en beoordeelde (cijfer)informatie is in belangrijke mate gebaseerd op historische (cijfer)informatie. Het risico bestaat dat de toekomstige kasstroom niet toereikend is om aan de betalingsverplichting(en) te kunnen voldoen.";
+      } else if (val === "toek") {
+        el.value = "De aangeleverde en beoordeelde (cijfer)informatie is in belangrijke mate gebaseerd op toekomstige (cijfer)informatie. Het risico bestaat dat de toekomstige kasstroom niet toereikend is om aan de betalingsverplichting(en) te kunnen voldoen.";
+      } else if (val === "box3") {
+        el.value = "Het risico bestaat dat de verwachte huuropbrengsten niet gerealiseerd worden.";
+      }
+    }
+
+    function applyHistoriePreset(val) {
+      if (!val) return;
+      const el = document.getElementById("f_historie_betaalverplichtingen");
+      if (val === "bkr_nee") {
+        el.value = "Heeft de Projecteigenaar de laatste vijf jaar een betalingsachterstand van 90 dagen of meer gehad? Conform recent inzicht vanuit BKR zijn deze niet bekend.";
+      } else if (val === "db_nee") {
+        el.value = "Heeft de Projecteigenaar de laatste vijf jaar een betalingsachterstand van 90 dagen of meer gehad? Conform recent inzicht vanuit Dun & Bradstreet zijn deze niet bekend.";
+      } else if (val === "db_ja") {
+        el.value = "Heeft de Projecteigenaar de laatste vijf jaar een betalingsachterstand van 90 dagen of meer gehad? Conform recent inzicht vanuit Dun & Bradstreet is hier sprake van geweest.";
+      }
+    }
+
+    function populateFormFromData(data) {
+      currentData = data;
+      document.getElementById("f_leningnummer").value = data.leningnummer || "";
+      document.getElementById("f_streefbedrag").value = data.streefbedrag || "";
+      document.getElementById("f_lei_code").value = data.lei_code || "724500VFNB9F43XDI745";
+      document.getElementById("f_investeringskans").value = data.investeringskans || "";
+      document.getElementById("f_projecteigenaar").value = data.projecteigenaar || "";
+      document.getElementById("f_deadline").value = data.deadline || "30 dagen na publicatiedatum";
+      document.getElementById("f_rechtsvorm").value = data.rechtsvorm || "";
+      document.getElementById("f_website").value = data.website || "n.v.t.";
+      document.getElementById("f_vestigingsplaats").value = data.vestigingsplaats || "";
+      document.getElementById("f_organigram_text").value = data.organigram_text || data.projecteigenaar || "";
+      updateOrganigramPreview();
+
+      document.getElementById("f_onderneming_text").value = data.onderneming_text || "";
+      document.getElementById("f_presentatie_intro").value = data.presentatie_intro || "";
+      document.getElementById("f_kasstroom_text").value = data.kasstroom_text || "";
+      document.getElementById("f_kvk_jaarcijfers_text").value = data.kvk_jaarcijfers_text || "Niet van toepassing.";
+
+      document.getElementById("f_bodembedrag").value = data.bodembedrag || "n.v.t.";
+      document.getElementById("f_inschrijfperiode").value = data.inschrijfperiode || "Maximaal 30 dagen na publicatie";
+      document.getElementById("f_bedenktermijn").value = data.bedenktermijn || "Vier kalenderdagen";
+      document.getElementById("f_collin_invested_note").value = data.collin_invested_note || "";
+
+      document.getElementById("f_kasstroom_risico_afsluiting").value = data.kasstroom_risico_afsluiting || "";
+      document.getElementById("f_include_herfinanciering").checked = Boolean(data.include_herfinanciering);
+      document.getElementById("f_herfinanciering_text").value = data.herfinanciering_text || "";
+      toggleHerfinanciering();
+
+      document.getElementById("f_financieringsbehoefte_text").value = data.financieringsbehoefte_text || "";
+      document.getElementById("f_risico_scores_text").value = data.risico_scores_text || "";
+      document.getElementById("f_zekerheden_bullets").value = (data.zekerheden_bullets || []).join("\n\n");
+      document.getElementById("f_historie_betaalverplichtingen").value = data.historie_betaalverplichtingen || "";
+
+      if (data.loan_params) {
+        document.getElementById("lp_principal").value = data.loan_params.principal || 100000;
+        document.getElementById("lp_rate").value = data.loan_params.annual_rate_pct || 7.5;
+        document.getElementById("lp_months").value = data.loan_params.months || 96;
+        document.getElementById("lp_grace").value = data.loan_params.grace_months || 0;
+        document.getElementById("lp_balloon").value = data.loan_params.balloon_amount || 0;
+        document.getElementById("lp_succes_fee").value = data.loan_params.succes_fee_pct ?? 2.0;
+        document.getElementById("lp_admin_pct").value = data.loan_params.admin_fee_pct ?? 0.07;
+        document.getElementById("lp_type").value = data.loan_params.loan_type || "Lineair";
+      }
+
+      renderGeldnemers();
+      renderInvesteringsoverzicht();
+      renderJaarcijfersTables();
+      updateScheduleSummary();
+    }
+
+    function collectFormData() {
+      const bulletsRaw = document.getElementById("f_zekerheden_bullets").value || "";
+      const bullets = bulletsRaw
+        .split(/\n{2,}|\n(?=[•\-])/)
+        .map(s => s.replace(/^[•\-]\s*/, "").trim())
+        .filter(Boolean);
+
+      const inv = document.getElementById("f_investeringskans").value.trim();
+      return {
+        ...currentData,
+        lei_code: document.getElementById("f_lei_code").value.trim(),
+        leningnummer: document.getElementById("f_leningnummer").value.trim(),
+        investeringskans: inv,
+        projectnaam: inv,
+        projecteigenaar: document.getElementById("f_projecteigenaar").value.trim(),
+        streefbedrag: document.getElementById("f_streefbedrag").value.trim(),
+        deadline: document.getElementById("f_deadline").value.trim(),
+        rechtsvorm: document.getElementById("f_rechtsvorm").value.trim(),
+        website: document.getElementById("f_website").value.trim(),
+        vestigingsplaats: document.getElementById("f_vestigingsplaats").value.trim(),
+        organigram_text: document.getElementById("f_organigram_text").value.trim(),
+        onderneming_text: document.getElementById("f_onderneming_text").value.trim(),
+        presentatie_intro: document.getElementById("f_presentatie_intro").value.trim(),
+        kasstroom_text: document.getElementById("f_kasstroom_text").value.trim(),
+        kvk_jaarcijfers_text: document.getElementById("f_kvk_jaarcijfers_text").value.trim(),
+        bodembedrag: document.getElementById("f_bodembedrag").value.trim(),
+        inschrijfperiode: document.getElementById("f_inschrijfperiode").value.trim(),
+        bedenktermijn: document.getElementById("f_bedenktermijn").value.trim(),
+        collin_invested_note: document.getElementById("f_collin_invested_note").value.trim(),
+        kasstroom_risico_afsluiting: document.getElementById("f_kasstroom_risico_afsluiting").value.trim(),
+        include_herfinanciering: document.getElementById("f_include_herfinanciering").checked,
+        herfinanciering_text: document.getElementById("f_herfinanciering_text").value.trim(),
+        financieringsbehoefte_text: document.getElementById("f_financieringsbehoefte_text").value.trim(),
+        risico_scores_text: document.getElementById("f_risico_scores_text").value.trim(),
+        zekerheden_bullets: bullets,
+        historie_betaalverplichtingen: document.getElementById("f_historie_betaalverplichtingen").value.trim(),
+      };
+    }
+
+    function updateScheduleSummary() {
+      const rows = currentData.betaalschema || [];
+      document.getElementById("scheduleSummaryText").textContent =
+        `${rows.length} rijen in betaalschema (Termijn 0 t/m ${Math.max(0, rows.length - 1)}).`;
+    }
+
+    async function scrapePitch() {
+      const url = document.getElementById("pitchUrlInput").value.trim();
+      if (!url) {
+        showStatus("Vul eerst een pitch-link in.", "error");
+        return;
+      }
+      const btn = document.getElementById("btnFetchPitch");
+      btn.disabled = true;
+      btn.textContent = "Bezig met ophalen...";
+      showStatus("Pitch-pagina wordt opgehaald en geanalyseerd...", "info");
+
+      try {
+        const res = await fetch("/api/scrape", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url }),
+        });
+        const payload = await res.json();
+        if (!res.ok || payload.error) {
+          throw new Error(payload.error || "Fout bij ophalen van pitch.");
+        }
+        populateFormFromData(payload.data);
+        showStatus(
+          `Pitch '${payload.data.investeringskans}' (Leningnr. ${payload.data.leningnummer}) succesvol ingeladen!`,
+          "success"
+        );
+        await refreshPdfPreview();
+      } catch (err) {
+        showStatus("Fout: " + err.message, "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Haal Pitch op & Vul EBI";
+      }
+    }
+
+    async function recalculateSchedule() {
+      const loan_params = {
+        principal: parseFloat(document.getElementById("lp_principal").value) || 0,
+        annual_rate_pct: parseFloat(document.getElementById("lp_rate").value) || 0,
+        months: parseInt(document.getElementById("lp_months").value, 10) || 0,
+        grace_months: parseInt(document.getElementById("lp_grace").value, 10) || 0,
+        balloon_amount: parseFloat(document.getElementById("lp_balloon").value) || 0,
+        succes_fee_pct: parseFloat(document.getElementById("lp_succes_fee").value) || 2.0,
+        admin_fee_pct: parseFloat(document.getElementById("lp_admin_pct").value) || 0.07,
+        loan_type: document.getElementById("lp_type").value || "Lineair",
+      };
+      const res = await fetch("/api/recalculate-schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ loan_params }),
+      });
+      const payload = await res.json();
+      if (res.ok && payload.betaalschema) {
+        currentData.betaalschema = payload.betaalschema;
+        updateScheduleSummary();
+        refreshPdfPreview();
+      }
+    }
+
+    async function applyPastedSchedule() {
+      const pasted = document.getElementById("f_pasted_schedule").value.trim();
+      if (!pasted) return;
+      const res = await fetch("/api/recalculate-schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pasted_schedule: pasted }),
+      });
+      const payload = await res.json();
+      if (!res.ok || payload.error) {
+        showStatus(payload.error || "Kon geplakt betaalschema niet verwerken.", "error");
+        return;
+      }
+      currentData.betaalschema = payload.betaalschema;
+      updateScheduleSummary();
+      showStatus(`Geplakt betaalschema (${payload.betaalschema.length} rijen) ingeladen!`, "success");
+      refreshPdfPreview();
+    }
+
+    async function refreshPdfPreview() {
+      const data = collectFormData();
+      const res = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          data,
+          organigram_image_base64: uploadedOrganigramBase64,
+        }),
+      });
+      if (!res.ok) {
+        showStatus("Fout bij genereren van PDF preview.", "error");
+        return;
+      }
+      const blob = await res.blob();
+      if (currentPdfBlobUrl) {
+        URL.revokeObjectURL(currentPdfBlobUrl);
+      }
+      currentPdfBlobUrl = URL.createObjectURL(blob);
+      document.getElementById("pdfPreviewFrame").src = currentPdfBlobUrl;
+    }
+
+    async function downloadPdf() {
+      const data = collectFormData();
+      const res = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          data,
+          organigram_image_base64: uploadedOrganigramBase64,
+        }),
+      });
+      if (!res.ok) {
+        showStatus("Fout bij downloaden van PDF.", "error");
+        return;
+      }
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      const safeName = (data.investeringskans || "EBI").replace(/[^a-zA-Z0-9._-]+/g, "_");
+      a.download = `EBI_${data.leningnummer || ""}_${safeName}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    async function downloadDocx() {
+      const data = collectFormData();
+      const res = await fetch("/api/generate-docx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data }),
+      });
+      if (!res.ok) {
+        showStatus("Fout bij downloaden van Word-document.", "error");
+        return;
+      }
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      const safeName = (data.investeringskans || "EBI").replace(/[^a-zA-Z0-9._-]+/g, "_");
+      a.download = `EBI_${data.leningnummer || ""}_${safeName}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str).replace(/"/g, "&quot;");
+    }
+
+    // Automatically load the default pitch on startup
+    window.addEventListener("DOMContentLoaded", () => {
+      scrapePitch();
+    });
+  </script>
+</body>
+</html>
